@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2013-5-22 上午10:13:44                                                        s
+     ergate           
+     en.xu                                                                
+     ====================================================================== -->
+<project name="ergate" default="complie">
+	<!--设置全局变量 -->
+	<property name="app.name" value="ergate" />
+	<property name="app.version" value="1.0.0" />
+	<property name="classes.encode" value="UTF-8" />
+	<property name="src" location="src/" />
+	<property name="temp" location="temp" />
+	<property name="jar" value="${app.name}-${app.version}.jar" />
+
+	<!--编译工程 -->
+	<target name="clean">
+		<echo message="正在清理上次遗留的临时文件"  level="info"/>
+		<delete dir="${temp}" failonerror="false" />
+		<delete file="${jar}" failonerror="false" />
+	</target>
+
+	<target name="init" depends="clean">
+		<echo message="设置编译需要准备的文件夹" level="info"/>
+		<mkdir dir="${temp}" />
+	</target>
+
+	<target name="complie" depends="init">
+		<echo message="正在编译${jar}" level="info"/>
+		<delete dir="${temp}/classes" />
+		<mkdir dir="${temp}/classes" />
+		<javac deprecation="off" debug="off" encoding="${classes.encode}" srcdir="${src}" destdir="${temp}/classes" includeantruntime="false" />
+		<copy todir="${temp}/classes">
+			<fileset dir="${src}" excludes="**/*.java" />
+		</copy>
+		<jar jarfile="${jar}" basedir="${temp}/classes" />
+		<delete dir="${temp}" />
+		<echo message="编译成功完成！" level="info" />
+	</target>
+
+</project>
