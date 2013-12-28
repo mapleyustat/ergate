@@ -34,11 +34,12 @@ public class SegmentMain {
 		while (imp.hasNext()) {
 			list = imp.getSentence();
 			list = segment.split(list);
-			for (int i = 0; i < list.size() - 1; i++) {
+			for (int i = 1; i < list.size() - 1; i++) {
 				cell = list.get(i);
 				builder.append(cell.image).append("[").append(cell.offset)
 						.append("]").append(cell.type.name).append(" ");
 			}
+			builder.append("\n");
 		}
 		imp.close();
 		return builder.toString();

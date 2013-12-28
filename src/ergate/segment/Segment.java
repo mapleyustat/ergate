@@ -103,7 +103,7 @@ public class Segment implements Closeable {
 		addBasicWord(sentence, matrix);
 		// 添加可能的词
 		addPossibleWord(sentence, matrix);
-		System.out.println(matrix);
+		//System.out.println(matrix);
 		// 选取最优的分词方式
 		getBestPath(matrix);
 		return toAtomList(matrix, sentence.offset);
