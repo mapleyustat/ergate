@@ -2,9 +2,9 @@ package ergate.utils;
 
 public final class NumUtils {
 
-	
 	/**
 	 * 熵函数
+	 * 
 	 * @param prop
 	 * @return
 	 */
@@ -12,6 +12,9 @@ public final class NumUtils {
 		if (prop < 0.0 || prop > 1.0) {
 			throw new IllegalArgumentException(
 					"prop must in [0,1],illegal prop=" + prop);
+		}
+		if (Double.isNaN(prop)) {
+			return 0.0;
 		}
 		if (prop == 0.0) {
 			return Double.MAX_VALUE / 10000;
