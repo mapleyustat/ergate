@@ -21,6 +21,8 @@ import ergate.utils.XIterator;
  * 
  */
 public class Segment implements Closeable {
+	private boolean debugOn;
+	private StringBuilder html;
 
 	/**
 	 * 所有的词语识别器
@@ -61,6 +63,38 @@ public class Segment implements Closeable {
 		this.taggers.addLast(tagger);
 	}
 
+	public void setDebug(boolean on) {
+		this.debugOn = on;
+	}
+
+	public String getDebugResult() {
+		return html.toString();
+	}
+
+	// 添加第一次切分结果
+	private void appendHead(AtomList sentence) {
+		html.setLength(0);
+		StringBuilder src = new StringBuilder();
+		for (int i = 1; i < sentence.size() - 1; i++) {
+			src.append(sentence.get(i).image);
+		}
+		html.append("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
+		html.append("<title>分词结果</title></head><body bgcolor=\"#CCFF99\">原文内容：");
+		html.append("<table border=\"1\" width=\"100%\"><tr><td width=\"100%\">");
+		html.append(src.toString());
+		html.append("</td></tr></table>");
+		// 显示经过原子分词后的结果
+		html.append("<p>进行原子分词后的结果：");
+		html.append(sentence.ToHTML());
+	}
+
+	// 添加最终结果
+	private void appendTail(AtomList sentence) {
+		html.append("<p>标注结果：");
+		html.append(sentence.ToHTML());
+		html.append("</body></html>");
+	}
+
 	/**
 	 * 切分句子,返回最终切分结果
 	 * 
@@ -70,16 +104,22 @@ public class Segment implements Closeable {
 	 */
 	public AtomList split(AtomList sentence) throws IOException {
 		if (!sentence.check()) {
-			if(sentence.size()==2){
+			if (sentence.size() == 2) {
 				return sentence;
 			}
 			throw new IllegalArgumentException(
 					"the sentence is not suit for the standard!");
 		}
+		if (debugOn) {
+			appendHead(sentence);
+		}
 
 		// 识别新词并进行分词
 		sentence = regWord(sentence);
 		// 标注
+		if (debugOn) {
+			appendTail(sentence);
+		}
 		return tag(sentence);
 	}
 
@@ -103,7 +143,7 @@ public class Segment implements Closeable {
 		addBasicWord(sentence, matrix);
 		// 添加可能的词
 		addPossibleWord(sentence, matrix);
-		//System.out.println(matrix);
+		// System.out.println(matrix);
 		// 选取最优的分词方式
 		getBestPath(matrix);
 		return toAtomList(matrix, sentence.offset);
@@ -172,6 +212,12 @@ public class Segment implements Closeable {
 		}
 	}
 
+	// 显示初次生成的分词图表
+	private void appendFisrtMartix(Matrix<Node> matrix) {
+		html.append("<p>初次生成的分词图表：");
+		html.append(matrix.toHTML());
+	}
+
 	/**
 	 * 选取最优分词
 	 * 
@@ -180,6 +226,9 @@ public class Segment implements Closeable {
 	 * @throws IOException
 	 */
 	private void getBestPath(Matrix<Node> matrix) throws IOException {
+		if (debugOn) {
+			appendFisrtMartix(matrix);
+		}
 		LinkedMatrixGraph<Edge> graph = new LinkedMatrixGraph<Edge>();
 		XIterator<Node> p_it, c_it;
 		Node Pnode, Nnode;
@@ -189,8 +238,8 @@ public class Segment implements Closeable {
 			c_it = matrix.row(Pnode.col, p_it);
 			while ((Nnode = c_it.next()) != null) {
 				distance = dict.distance(Pnode.cell, Nnode.cell);
-//				 System.err.println(Pnode.cell + "====" +
-//				 Nnode.cell+"["+distance+"]");
+				// System.err.println(Pnode.cell + "====" +
+				// Nnode.cell+"["+distance+"]");
 				graph.addLast(new Edge(p_it.index(), c_it.index(), distance));
 			}
 		}

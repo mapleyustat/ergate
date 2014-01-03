@@ -48,4 +48,26 @@ public class AtomList extends ArrayList<Cell> {
 		return "[offset=" + offset + "]" + super.toString();
 	}
 
+	public String ToHTML() {
+		StringBuilder html = new StringBuilder();
+		html.append("<table border=\"1\" width=\"100%\"><tr><td width=\"100%\">");
+		Cell cell;
+		for (int i = 1; i < size() - 1; i++) {
+			cell = get(i);
+			html.append("<font color=\"blue\">").append(getIString(cell.image))
+					.append("</font>");
+			html.append("<font color=\"#006030\">[")
+					.append(getIString(cell.type.name)).append("]</font>");
+			html.append("&nbsp;");
+		}
+		html.append("</td></tr></table>");
+		return html.toString();
+	}
+
+	private String getIString(String image) {
+		if (image.startsWith("<") && image.endsWith(">")) {
+			return image.substring(1, image.length() - 1);
+		}
+		return image;
+	}
 }

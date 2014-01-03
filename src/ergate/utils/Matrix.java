@@ -114,5 +114,85 @@ public abstract class Matrix<E extends Element> implements XIterable<E> {
 		builder.append("\n");
 		return builder.toString();
 	}
+	
+	public String toHTML() {
+		StringBuilder html = new StringBuilder();
+		html.append("<table border=\"1\" width=\"100%\">");
+		html.append("<tr>");
+		html.append("<td width=\"5%\"></td>");
+		int width = cols();
+		double size = 95.0 / width;
+		for (int i = 0; i < width; i++) {
+			html.append("<td width=\"" + size + "%\" bgcolor=\"#99CCFF\">" + i
+					+ "</td>");
+		}
+		html.append("</tr>");
+		E cur = null;
+		E curp = null;
+		XIterator<E> it = iterator();
+		int rowN = -1, colN = 0;
+		int row, col;
+		StringBuilder builder = new StringBuilder();
+		while (true) {
+			if (cur == null) {
+				cur = it.next();
+				if (cur == null)
+					break;
+			}
+			row = cur.row;
+			col = cur.col;
+			builder.append(getIString(String.valueOf(cur))).append("|");
+			while ((curp = it.next()) != null) {
+				if (curp.col == col && curp.row == row) {
+					builder.append(getIString(String.valueOf(curp)))
+							.append("|");
+				} else {
+					break;
+				}
+			}
+			cur = curp;
+			boolean first = true;
+			while (rowN < row) {
+				if (rowN > -1) {
+					if (first) {
+						for (int j = colN; j < width; j++) {
+							html.append("<td width=\"" + size
+									+ "%\">&nbsp</td>");
+						}
+						html.append("</tr>");
+						colN = 0;
+					} else {
+						for (int j = 0; j < width; j++) {
+							html.append("<td width=\"" + size
+									+ "%\">&nbsp</td>");
+						}
+						html.append("</tr>");
+					}
+				}
+				rowN++;
+				first = false;
+				html.append("<tr>")
+						.append("<td width=\"5%\">" + rowN + "</td>");
+			}
+			while (colN < col) {
+				html.append("<td width=\"" + size + "%\">&nbsp</td>");
+				colN++;
+			}
+			html.append("<td width=\"" + size + "%\"><a>");
+			builder.deleteCharAt(builder.length() - 1);
+			html.append(builder.toString()).append("</a></td>");
+			builder.setLength(0);
+			colN++;
+		}
+		html.append("</table>");
+		return html.toString();
+	}
+
+	private String getIString(String image) {
+		if (image.startsWith("<") && image.endsWith(">")) {
+			return image.substring(1, image.length() - 1);
+		}
+		return image;
+	}
 
 }
