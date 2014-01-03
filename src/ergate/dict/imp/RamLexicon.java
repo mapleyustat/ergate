@@ -119,19 +119,8 @@ public class RamLexicon implements Dictionary {
 			LWeight = wordP.weight;
 			preRfreq = wordP.FreqR;
 		}
-
-		long lnum = 0l;
-		if (wordN != null) {
-			lnum = wordN.LNum;
-		}
-
-		double val = 0.0;
-		if (wordsPairNum > 0 && preRfreq > 0) {
-			val = (ocFreq - D(ocFreq) + LWeight * lnum / wordsPairNum)
-					/ preRfreq;
-		}
-
-		return val;
+		long lnum = wordN != null ? wordN.LNum : 0l;
+		return (ocFreq - D(ocFreq) + LWeight * lnum / wordsPairNum) / preRfreq;
 	}
 
 	private String getSymble(Cell p) {
@@ -189,13 +178,13 @@ public class RamLexicon implements Dictionary {
 			}
 		}
 
-		long sum = nk[0]+2*nk[1];
+		long sum = nk[0] + 2 * nk[1];
 		double Y = 0;
 		if (sum > 0)
 			Y = nk[0] * 1.0 / sum;
 		for (int i = 0; i < K_LIMIT; i++) {
 			if (nk[i] > 0)
-				D[i] = (i+1) - (i + 2) * Y * nk[i + 1] / nk[i];
+				D[i] = (i + 1) - (i + 2) * Y * nk[i + 1] / nk[i];
 		}
 
 		for (Object[] oba : idMap.values()) {
@@ -353,5 +342,4 @@ public class RamLexicon implements Dictionary {
 		return "RamLexicon [D=" + Arrays.toString(D) + "]";
 	}
 
-	
 }
